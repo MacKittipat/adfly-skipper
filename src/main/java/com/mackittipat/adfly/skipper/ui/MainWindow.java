@@ -6,17 +6,24 @@
 
 package com.mackittipat.adfly.skipper.ui;
 
+import com.mackittipat.adfly.skipper.core.AdFlySkipper;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  * @author mac
  */
 public class MainWindow extends javax.swing.JFrame {
+    
+    private AdFlySkipper adFlySkipper;
 
     /**
      * Creates new form frmMain
      */
     public MainWindow() {
         initComponents();
+        adFlySkipper = new AdFlySkipper();
     }
 
     /**
@@ -48,6 +55,11 @@ public class MainWindow extends javax.swing.JFrame {
         jScrollPane2.setViewportView(txtAdFlyUrl);
 
         btnSkip.setText("Skip URL");
+        btnSkip.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSkipActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -83,6 +95,17 @@ public class MainWindow extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnSkipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSkipActionPerformed
+        String[] adFlyUrls = txtAdFlyUrl.getText().split("\n");
+        String tartGetUrlResult = "";
+        List<String> targetUrlList = 
+                adFlySkipper.skipAdFlyUrl(Arrays.asList(adFlyUrls));
+        for(String targetUrl : targetUrlList) {
+            tartGetUrlResult += targetUrl + "\n";
+        }
+        txtTargetUrl.setText(tartGetUrlResult);
+    }//GEN-LAST:event_btnSkipActionPerformed
 
     /**
      * @param args the command line arguments
