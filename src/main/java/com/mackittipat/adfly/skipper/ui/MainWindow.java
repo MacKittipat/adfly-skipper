@@ -7,8 +7,20 @@
 package com.mackittipat.adfly.skipper.ui;
 
 import com.mackittipat.adfly.skipper.core.AdFlySkipper;
+import com.mackittipat.adfly.skipper.core.model.TargetUrlModel;
+import java.awt.Color;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
 
 /**
  *
@@ -41,6 +53,7 @@ public class MainWindow extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         txtAdFlyUrl = new javax.swing.JTextPane();
         btnSkip = new javax.swing.JButton();
+        btnCheckUrlHealth = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("AdFly Skipper");
@@ -61,6 +74,13 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
+        btnCheckUrlHealth.setText("Check Health");
+        btnCheckUrlHealth.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCheckUrlHealthActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -73,7 +93,9 @@ public class MainWindow extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 550, Short.MAX_VALUE)
+                        .addGap(0, 435, Short.MAX_VALUE)
+                        .addComponent(btnCheckUrlHealth)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSkip))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
@@ -88,7 +110,9 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGap(26, 26, 26)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(btnSkip)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnSkip)
+                    .addComponent(btnCheckUrlHealth))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
 
@@ -99,13 +123,82 @@ public class MainWindow extends javax.swing.JFrame {
     private void btnSkipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSkipActionPerformed
         String[] adFlyUrls = txtAdFlyUrl.getText().split("\n");
         String tartGetUrlResult = "";
-        List<String> targetUrlList = 
+        List<TargetUrlModel> targetUrlModelList = 
                 adFlySkipper.skipAdFlyUrl(Arrays.asList(adFlyUrls));
-        for(String targetUrl : targetUrlList) {
-            tartGetUrlResult += targetUrl + "\n";
+        for(TargetUrlModel targetUrlModel : targetUrlModelList) {
+            tartGetUrlResult += targetUrlModel.getUrl() + "\n";
         }
         txtTargetUrl.setText(tartGetUrlResult);
+        
+        
+//        DefaultStyledDocument document = new DefaultStyledDocument();
+//        txtTargetUrl.setDocument(document);
+//        StyleContext context = new StyleContext();
+//        // build a style
+//        Style style = context.addStyle("test", null);
+//        // set some style properties
+//        StyleConstants.setForeground(style, Color.BLUE);
+//        try {
+//            // add some data to the document
+//            document.insertString(0, "aasdasdasd\n", style);
+//            document.insertString(11, "123123", null);
+//        } catch (BadLocationException ex) {
+//            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }//GEN-LAST:event_btnSkipActionPerformed
+
+    private void btnCheckUrlHealthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckUrlHealthActionPerformed
+//        txtTargetUrl.setText("");
+        
+        DefaultStyledDocument document = new DefaultStyledDocument();
+        StyleContext context = new StyleContext();
+
+        Style styleBlue = context.addStyle("styleBlue", null);
+        StyleConstants.setForeground(styleBlue, Color.BLUE);
+        
+        Style styleRed = context.addStyle("styleRed", null);
+        StyleConstants.setForeground(styleRed, Color.RED);       
+        
+        String txtTargetUrlContent = "";
+        
+        System.out.println(txtTargetUrl.getText());
+        String[] targetUrls = txtTargetUrl.getText().split("\n");
+        for(String targetUrl : targetUrls) {
+            System.out.println(">>> " + targetUrl);
+            if(adFlySkipper.retrieveRequestStatus(targetUrl)) {
+                try {
+                    document.insertString(txtTargetUrlContent.length(), targetUrl + "\n", styleBlue);
+                    txtTargetUrlContent += targetUrl + "\n";
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                try {
+                    document.insertString(txtTargetUrlContent.length(), targetUrl + "\n", styleRed);
+                    txtTargetUrlContent += targetUrl + "\n";
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        
+        txtTargetUrl.setDocument(document);
+        
+//        DefaultStyledDocument document = new DefaultStyledDocument();
+//        StyleContext context = new StyleContext();
+//        // build a style
+//        Style style = context.addStyle("test", null);
+//        // set some style properties
+//        StyleConstants.setForeground(style, Color.BLUE);
+//        try {
+//            // add some data to the document
+//            document.
+//            document.insertString(0, "aasdasdasd\n", style);
+//            document.insertString(11, "123123", null);
+//        } catch (BadLocationException ex) {
+//            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+    }//GEN-LAST:event_btnCheckUrlHealthActionPerformed
 
     /**
      * @param args the command line arguments
@@ -140,9 +233,11 @@ public class MainWindow extends javax.swing.JFrame {
                 new MainWindow().setVisible(true);
             }
         });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCheckUrlHealth;
     private javax.swing.JButton btnSkip;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
