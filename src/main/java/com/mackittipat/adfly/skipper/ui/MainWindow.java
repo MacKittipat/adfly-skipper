@@ -8,9 +8,6 @@ package com.mackittipat.adfly.skipper.ui;
 
 import com.mackittipat.adfly.skipper.core.AdFlySkipper;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  *
  * @author mac
@@ -42,6 +39,7 @@ public class MainWindow extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         txtAdFlyUrl = new javax.swing.JTextPane();
         btnSkip = new javax.swing.JButton();
+        pgbSkip = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("AdFly Skipper");
@@ -69,14 +67,15 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblAdFlyUrl)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 550, Short.MAX_VALUE)
                         .addComponent(btnSkip))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblAdFlyUrl)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(pgbSkip, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -85,12 +84,14 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(lblAdFlyUrl)
                 .addGap(18, 18, 18)
+                .addComponent(pgbSkip, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnSkip)
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         pack();
@@ -99,13 +100,28 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void btnSkipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSkipActionPerformed
         String[] adFlyUrls = txtAdFlyUrl.getText().split("\n");
-        String tartGetUrlResult = "";
-        List<String> targetUrlList = 
-                adFlySkipper.skipAdFlyUrl(Arrays.asList(adFlyUrls));
-        for(String targetUrl : targetUrlList) {
-            tartGetUrlResult += targetUrl + "\n";
-        }
-        txtTargetUrl.setText(tartGetUrlResult);
+        // Total number of adfly link.
+        int numAdFlyUrl = adFlyUrls.length;
+        Thread threadSkipAdFlyUrl = new Thread() {
+            @Override
+            public void run() {
+                int countProgressBarPercent = 0;
+                for(int i=0; i<numAdFlyUrl; i++) {
+                    // Skip adfly url.
+                    String targetUrl = adFlySkipper.skipAdFlyUrl(adFlyUrls[i]);
+                    // Display target url.
+                    txtTargetUrl.setText(txtTargetUrl.getText() + targetUrl + "\n");
+                    // Update progress bar.
+                    if(i < numAdFlyUrl-1) {
+                        countProgressBarPercent += 100 / numAdFlyUrl;
+                    } else {
+                        countProgressBarPercent = 100;
+                    }
+                    pgbSkip.setValue(countProgressBarPercent);
+                }
+            }
+        };
+        threadSkipAdFlyUrl.start();
     }//GEN-LAST:event_btnSkipActionPerformed
 
     /**
@@ -148,6 +164,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblAdFlyUrl;
+    private javax.swing.JProgressBar pgbSkip;
     private javax.swing.JTextPane txtAdFlyUrl;
     private javax.swing.JTextPane txtTargetUrl;
     // End of variables declaration//GEN-END:variables
