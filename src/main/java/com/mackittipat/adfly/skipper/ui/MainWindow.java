@@ -7,6 +7,7 @@
 package com.mackittipat.adfly.skipper.ui;
 
 import com.mackittipat.adfly.skipper.core.AdFlySkipper;
+
 import java.util.Arrays;
 import java.util.List;
 
