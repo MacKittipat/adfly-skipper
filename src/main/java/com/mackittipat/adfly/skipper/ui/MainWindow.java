@@ -99,8 +99,9 @@ public class MainWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSkipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSkipActionPerformed
-        // Clear text
+        // Clear text and progress bar.
         txtTargetUrl.setText("");
+        pgbSkip.setValue(0);
         // Disable button for temporary.
         btnSkip.setEnabled(false);
         String[] adFlyUrls = txtAdFlyUrl.getText().split("\n");
