@@ -99,6 +99,8 @@ public class MainWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSkipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSkipActionPerformed
+        // Disable button for temporary.
+        btnSkip.setEnabled(false);
         String[] adFlyUrls = txtAdFlyUrl.getText().split("\n");
         // Total number of adfly link.
         int numAdFlyUrl = adFlyUrls.length;
@@ -116,6 +118,8 @@ public class MainWindow extends javax.swing.JFrame {
                         countProgressBarPercent += 100 / numAdFlyUrl;
                     } else {
                         countProgressBarPercent = 100;
+                        // After skip all adfly url, enable button again.
+                        btnSkip.setEnabled(true);
                     }
                     pgbSkip.setValue(countProgressBarPercent);
                 }
